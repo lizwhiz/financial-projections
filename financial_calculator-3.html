@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Financial Planning Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .input-panel {
+            background: #f8f9fa;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .results-panel {
+            background: white;
+            padding: 30px;
+            border-left: 1px solid #e9ecef;
+            overflow-y: auto;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .section p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        small {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3);
+        }
+
+        .results-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+
+        .results-section h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .success {
+            color: #27ae60;
+        }
+
+        .warning {
+            color: #f39c12;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+
+        .windfall-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .remove-windfall {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .add-windfall {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #calculatedTarget {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .disclaimer {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #f39c12;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 30px;
+            color: #856404;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .disclaimer h4 {
+            color: #d68910;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .disclaimer p {
+            margin-bottom: 10px;
+        }
+
+        .disclaimer p:last-child {
+            margin-bottom: 0;
+        }
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Advanced Financial Planning Calculator</h1>
+            <p>Plan your retirement, model windfalls, and discover when you can stop saving</p>
+        </div>
+
+        <div class="disclaimer">
+            <h4>⚠️ Important Disclaimer</h4>
+            <p><strong>Personal Project Notice:</strong> This calculator is a personal project built using generative AI for my own personal use and enjoyment. It is provided for educational and informational purposes only.</p>
+            <p><strong>Not Financial Advice:</strong> I am not a financial planner, investment advisor, or otherwise qualified to provide financial advice. The results, projections, and analysis provided by this calculator should not be considered as financial advice or recommendations.</p>
+            <p><strong>Seek Professional Guidance:</strong> Before making any financial decisions, please consult with a certified financial planner, registered investment advisor, or other qualified financial professional who can provide personalized advice based on your specific circumstances and goals.</p>
+            <p><strong>Use at Your Own Risk:</strong> All calculations are estimates based on the assumptions and inputs provided. Actual results may vary significantly due to market conditions, changes in personal circumstances, and other factors.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <div class="section">
+                    <h3>📊 Current Financial Position</h3>
+                    <p>Enter your current age and the total amount you have saved in all retirement accounts (401k, IRA, Roth IRA, etc.). This forms the foundation for your retirement projections.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentAge">Current Age</label>
+                            <input type="number" id="currentAge" value="40" min="18" max="80">
+                        </div>
+                        <div class="form-group">
+                            <label for="currentBalance">Current Retirement Balance ($)</label>
+                            <input type="number" id="currentBalance" value="475000" min="0" step="1000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>💰 Annual Retirement Savings</h3>
+                    <p>Break down your annual retirement contributions by type. Include your 401k contributions, employer matching, IRA/Roth IRA contributions, and mega backdoor Roth if available. These grow tax-advantaged until retirement.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employee401k">Employee 401k Contributions ($)</label>
+                            <input type="number" id="employee401k" value="23000" min="0" step="500">
+                        </div>
+                        <div class="form-group">
+                            <label for="employer401k">Employer 401k Match ($)</label>
+                            <input type="number" id="employer401k" value="10000" min="0" step="500">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rothIRA">Roth IRA Contributions ($)</label>
+                            <input type="number" id="rothIRA" value="7000" min="0" step="500">
+                        </div>
+                        <div class="form-group">
+                            <label for="spouseRothIRA">Spouse Roth IRA ($)</label>
+                            <input type="number" id="spouseRothIRA" value="7000" min="0" step="500">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="megaBackdoor">Mega Backdoor Roth ($)</label>
+                            <input type="number" id="megaBackdoor" value="20500" min="0" step="500">
+                        </div>
+                        <div class="form-group">
+                            <label for="retirementGrowthRate">Annual Increase in Contributions (%)</label>
+                            <input type="number" id="retirementGrowthRate" value="3" min="0" max="10" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>💵 Additional Cash Savings</h3>
+                    <p>Money saved outside retirement accounts for flexibility, emergencies, or early retirement. Choose how you'll invest this money - more conservative options provide stability while growth investments offer higher long-term potential.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="additionalSavings">Annual Amount ($)</label>
+                            <input type="number" id="additionalSavings" value="50000" min="0" step="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="savingsType">Investment Type</label>
+                            <select id="savingsType">
+                                <option value="savings">High-Yield Savings Account</option>
+                                <option value="cds">CDs / Treasury Bills</option>
+                                <option value="bonds">Bond Index Funds</option>
+                                <option value="balanced">Balanced Funds (60/40)</option>
+                                <option value="index" selected>Stock Index Funds</option>
+                                <option value="growth">Growth Stocks</option>
+                                <option value="individual">Individual Stocks</option>
+                                <option value="crypto">Cryptocurrency</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expectedReturn">Expected Annual Return (%)</label>
+                            <input type="number" id="expectedReturn" value="7.0" min="0" max="20" step="0.1">
+                            <small id="returnSuggestion">Suggested: 7.0% for stock index funds</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="additionalGrowthRate">Annual Increase in Savings (%)</label>
+                            <input type="number" id="additionalGrowthRate" value="3" min="0" max="10" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🎯 Retirement Goals</h3>
+                    <p>Define your retirement timeline and financial targets. You can either set a target portfolio balance OR specify your desired monthly income in retirement (recommended for most people).</p>
+                    
+                    <div class="form-group">
+                        <label for="goalType">Goal Setting Method</label>
+                        <select id="goalType">
+                            <option value="income">Monthly Income Target (Recommended)</option>
+                            <option value="balance">Portfolio Balance Target</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="retirementAge">Retirement Age (Stop Working)</label>
+                            <input type="number" id="retirementAge" value="60" min="50" max="80">
+                        </div>
+                        <div class="form-group">
+                            <label for="socialSecurityAge">Social Security Age</label>
+                            <input type="number" id="socialSecurityAge" value="67" min="62" max="70">
+                        </div>
+                    </div>
+
+                    <!-- Income-based goal inputs (shown by default) -->
+                    <div id="incomeGoalInputs">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="desiredMonthlyIncome">Desired Monthly Income ($)</label>
+                                <input type="number" id="desiredMonthlyIncome" value="15000" min="1000" step="500">
+                                <small>Total monthly income you want in retirement</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="socialSecurityMonthly">Expected Monthly Social Security ($)</label>
+                                <input type="number" id="socialSecurityMonthly" value="3500" min="0" step="100">
+                                <small>Estimate from ssa.gov</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="otherRetirementIncome">Other Monthly Retirement Income ($)</label>
+                            <input type="number" id="otherRetirementIncome" value="0" min="0" step="100">
+                            <small>Pensions, rental income, part-time work, etc.</small>
+                        </div>
+                        <div id="calculatedTarget">
+                            <strong>Calculated Target Portfolio: <span id="targetFromIncome">$0</span></strong>
+                            <br><small>Based on 4% withdrawal rate to fund the gap between desired income and other sources</small>
+                        </div>
+                    </div>
+
+                    <!-- Balance-based goal inputs (hidden by default) -->
+                    <div id="balanceGoalInputs" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="targetBalance">Target Retirement Balance ($)</label>
+                                <input type="number" id="targetBalance" value="5000000" min="100000" step="50000">
+                            </div>
+                            <div class="form-group">
+                                <label for="socialSecurityMonthlyBalance">Monthly Social Security ($)</label>
+                                <input type="number" id="socialSecurityMonthlyBalance" value="3500" min="0" step="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="withdrawalRate">Annual Withdrawal Rate (%)</label>
+                            <input type="number" id="withdrawalRate" value="4" min="2" max="8" step="0.1">
+                            <small>4% is the traditional "safe" rate</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="investmentReturn">Expected Annual Return (%)</label>
+                            <input type="number" id="investmentReturn" value="7" min="3" max="12" step="0.1">
+                            <small>7% is typical for stock-heavy portfolios</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🎁 Windfalls & One-Time Events</h3>
+                    <p>Add expected one-time money events like bonuses, RSU vestings, inheritance, property sales, or IPO proceeds. Specify what percentage goes to retirement vs. other goals like house payments, lifestyle, or non-retirement investments.</p>
+                    <div id="windfalls">
+                        <!-- Example windfall will be added here -->
+                    </div>
+                    <button type="button" class="add-windfall" id="addWindfallBtn">+ Add Windfall</button>
+                </div>
+
+                <button class="btn" id="calculateBtn">🔥 Calculate Financial Projections</button>
+            </div>
+
+            <div class="results-panel">
+                <div class="results-section">
+                    <h4>📈 Retirement Readiness Summary</h4>
+                    <div id="summaryResults">
+                        <p style="text-align: center; color: #7f8c8d; font-style: italic; padding: 40px;">
+                            Click "Calculate Financial Projections" to see your personalized retirement analysis
+                        </p>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h4>⏰ Timeline Analysis</h4>
+                    <div id="timelineResults">
+                        <p style="text-align: center; color: #7f8c8d; font-style: italic; padding: 20px;">
+                            Results will appear here after calculation
+                        </p>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h4>📊 Year-by-Year Projection</h4>
+                    <div id="projectionTable">
+                        <p style="text-align: center; color: #7f8c8d; font-style: italic; padding: 20px;">
+                            Detailed projections will appear here
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('Script starting...');
+        
+        let windfallCount = 0;
+
+        function addWindfall() {
+            console.log('Adding windfall...');
+            windfallCount++;
+            
+            const container = document.getElementById('windfalls');
+            const div = document.createElement('div');
+            div.className = 'windfall-item';
+            div.id = 'windfall-' + windfallCount;
+            
+            div.innerHTML = '<button type="button" class="remove-windfall">×</button>' +
+                '<div class="form-row">' +
+                    '<div class="form-group">' +
+                        '<label>Windfall Amount ($)</label>' +
+                        '<input type="number" id="windfallAmount-' + windfallCount + '" min="0" step="1000">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                        '<label>Year Received</label>' +
+                        '<input type="number" id="windfallYear-' + windfallCount + '" min="2024" max="2080">' +
+                    '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                    '<label>Allocation to Retirement (%)</label>' +
+                    '<input type="number" id="windfallAllocation-' + windfallCount + '" value="50" min="0" max="100" step="5">' +
+                '</div>';
+            
+            container.appendChild(div);
+            
+            const removeBtn = div.querySelector('.remove-windfall');
+            removeBtn.addEventListener('click', function() {
+                div.remove();
+            });
+        }
+
+        function toggleGoalType() {
+            const goalType = document.getElementById('goalType').value;
+            const incomeInputs = document.getElementById('incomeGoalInputs');
+            const balanceInputs = document.getElementById('balanceGoalInputs');
+            
+            if (goalType === 'income') {
+                incomeInputs.style.display = 'block';
+                balanceInputs.style.display = 'none';
+                updateTargetFromIncome();
+            } else {
+                incomeInputs.style.display = 'none';
+                balanceInputs.style.display = 'block';
+            }
+        }
+
+        function updateTargetFromIncome() {
+            const desiredMonthly = parseFloat(document.getElementById('desiredMonthlyIncome').value) || 0;
+            const socialSecurity = parseFloat(document.getElementById('socialSecurityMonthly').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherRetirementIncome').value) || 0;
+            const withdrawalRate = parseFloat(document.getElementById('withdrawalRate').value) / 100 || 0.04;
+            
+            const neededFromPortfolio = Math.max(0, desiredMonthly - socialSecurity - otherIncome);
+            const requiredPortfolio = (neededFromPortfolio * 12) / withdrawalRate;
+            
+            const targetSpan = document.getElementById('targetFromIncome');
+            if (targetSpan) {
+                targetSpan.textContent = '$' + Math.round(requiredPortfolio).toLocaleString();
+            }
+            
+            return requiredPortfolio;
+        }
+
+        function getTargetBalance() {
+            const goalType = document.getElementById('goalType').value;
+            
+            if (goalType === 'income') {
+                return updateTargetFromIncome();
+            } else {
+                return parseFloat(document.getElementById('targetBalance').value) || 1000000;
+            }
+        }
+
+        function getSocialSecurityAmount() {
+            const goalType = document.getElementById('goalType').value;
+            
+            if (goalType === 'income') {
+                return parseFloat(document.getElementById('socialSecurityMonthly').value) || 0;
+            } else {
+                return parseFloat(document.getElementById('socialSecurityMonthlyBalance').value) || 0;
+            }
+        }
+
+        function calculateProjections() {
+            console.log('Starting calculations...');
+            
+            try {
+                const currentAge = parseInt(document.getElementById('currentAge').value) || 40;
+                const currentBalance = parseFloat(document.getElementById('currentBalance').value) || 0;
+                const retirementAge = parseInt(document.getElementById('retirementAge').value) || 65;
+                const socialSecurityAge = parseInt(document.getElementById('socialSecurityAge').value) || 67;
+                
+                const targetBalance = getTargetBalance();
+                const socialSecurityMonthly = getSocialSecurityAmount();
+                
+                const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) / 100 || 0.07;
+                const withdrawalRate = parseFloat(document.getElementById('withdrawalRate').value) / 100 || 0.04;
+                
+                const employee401k = parseFloat(document.getElementById('employee401k').value) || 0;
+                const employer401k = parseFloat(document.getElementById('employer401k').value) || 0;
+                const rothIRA = parseFloat(document.getElementById('rothIRA').value) || 0;
+                const spouseRothIRA = parseFloat(document.getElementById('spouseRothIRA').value) || 0;
+                const megaBackdoor = parseFloat(document.getElementById('megaBackdoor').value) || 0;
+                
+                const totalAnnualSavings = employee401k + employer401k + rothIRA + spouseRothIRA + megaBackdoor;
+                
+                let balance = currentBalance;
+                let goalReachedAge = null;
+                let canStopSavingAge = null;
+                
+                for (let age = currentAge; age <= retirementAge; age++) {
+                    balance += totalAnnualSavings;
+                    balance *= (1 + investmentReturn);
+                    
+                    if (!goalReachedAge && balance >= targetBalance) {
+                        goalReachedAge = age;
+                    }
+                    
+                    if (!canStopSavingAge && age < retirementAge) {
+                        const yearsToRetirement = retirementAge - age;
+                        const futureBalance = balance * Math.pow(1 + investmentReturn, yearsToRetirement);
+                        if (futureBalance >= targetBalance) {
+                            canStopSavingAge = age;
+                        }
+                    }
+                }
+                
+                const monthlyFromPortfolio = (balance * withdrawalRate) / 12;
+                const totalMonthlyIncome = monthlyFromPortfolio + socialSecurityMonthly;
+                
+                const summaryDiv = document.getElementById('summaryResults');
+                const goalMet = balance >= targetBalance;
+                const surplus = balance - targetBalance;
+                const goalType = document.getElementById('goalType').value;
+                
+                let resultsHTML = 
+                    '<div class="metric">' +
+                        '<span class="metric-label">Balance at Age ' + retirementAge + '</span>' +
+                        '<span class="metric-value ' + (goalMet ? 'success' : 'error') + '">$' + Math.round(balance).toLocaleString() + '</span>' +
+                    '</div>' +
+                    '<div class="metric">' +
+                        '<span class="metric-label">Monthly Income from Portfolio</span>' +
+                        '<span class="metric-value">$' + Math.round(monthlyFromPortfolio).toLocaleString() + '</span>' +
+                    '</div>';
+                
+                if (socialSecurityMonthly > 0) {
+                    resultsHTML += 
+                        '<div class="metric">' +
+                            '<span class="metric-label">Monthly Social Security</span>' +
+                            '<span class="metric-value">$' + Math.round(socialSecurityMonthly).toLocaleString() + '</span>' +
+                        '</div>';
+                }
+                
+                resultsHTML += 
+                    '<div class="metric">' +
+                        '<span class="metric-label">Total Monthly Income</span>' +
+                        '<span class="metric-value success">$' + Math.round(totalMonthlyIncome).toLocaleString() + '</span>' +
+                    '</div>';
+                
+                if (goalType === 'income') {
+                    const desiredIncome = parseFloat(document.getElementById('desiredMonthlyIncome').value) || 0;
+                    const incomeGoalMet = totalMonthlyIncome >= desiredIncome;
+                    const incomeGap = totalMonthlyIncome - desiredIncome;
+                    
+                    resultsHTML += 
+                        '<div class="metric">' +
+                            '<span class="metric-label">Income Goal Achievement</span>' +
+                            '<span class="metric-value ' + (incomeGoalMet ? 'success' : 'error') + '">' + (incomeGoalMet ? '✅ Goal Met' : '❌ Shortfall') + '</span>' +
+                        '</div>' +
+                        '<div class="metric">' +
+                            '<span class="metric-label">Income ' + (incomeGap >= 0 ? 'Surplus' : 'Shortfall') + '</span>' +
+                            '<span class="metric-value ' + (incomeGap >= 0 ? 'success' : 'error') + '">' + (incomeGap >= 0 ? '+' : '') + '$' + Math.round(incomeGap).toLocaleString() + '/month</span>' +
+                        '</div>';
+                } else {
+                    resultsHTML += 
+                        '<div class="metric">' +
+                            '<span class="metric-label">Target Achievement</span>' +
+                            '<span class="metric-value ' + (goalMet ? 'success' : 'error') + '">' + (goalMet ? '✅ Goal Met' : '❌ Shortfall') + '</span>' +
+                        '</div>' +
+                        '<div class="metric">' +
+                            '<span class="metric-label">' + (surplus >= 0 ? 'Surplus' : 'Shortfall') + '</span>' +
+                            '<span class="metric-value ' + (surplus >= 0 ? 'success' : 'error') + '">' + (surplus >= 0 ? '+' : '') + '$' + Math.round(surplus).toLocaleString() + '</span>' +
+                        '</div>';
+                }
+                
+                resultsHTML += 
+                    '<div class="metric">' +
+                        '<span class="metric-label">Goal Reached at Age</span>' +
+                        '<span class="metric-value ' + (goalReachedAge ? 'success' : 'error') + '">' + (goalReachedAge || 'Never') + '</span>' +
+                    '</div>';
+                
+                if (canStopSavingAge) {
+                    resultsHTML += 
+                        '<div class="metric">' +
+                            '<span class="metric-label">Can Stop Saving at Age</span>' +
+                            '<span class="metric-value success">' + canStopSavingAge + '</span>' +
+                        '</div>';
+                }
+                
+                summaryDiv.innerHTML = resultsHTML;
+                
+                let timelineHTML = '<p><strong>Timeline Summary:</strong><br>';
+                if (goalReachedAge) {
+                    if (goalReachedAge <= retirementAge) {
+                        timelineHTML += '🎉 You will reach your goal at age ' + goalReachedAge;
+                        if (goalReachedAge < retirementAge) {
+                            timelineHTML += ' (' + (retirementAge - goalReachedAge) + ' years early)';
+                        }
+                    } else {
+                        timelineHTML += '⚠️ You will reach your goal at age ' + goalReachedAge + ' (' + (goalReachedAge - retirementAge) + ' years after retirement)';
+                    }
+                } else {
+                    timelineHTML += '❌ You will not reach your goal with current savings rate';
+                }
+                timelineHTML += '</p>';
+                
+                document.getElementById('timelineResults').innerHTML = timelineHTML;
+                document.getElementById('projectionTable').innerHTML = '<p>Advanced projections and detailed tables coming soon...</p>';
+                
+                console.log('Calculations completed successfully');
+                
+            } catch (error) {
+                console.error('Calculation error:', error);
+                document.getElementById('summaryResults').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
+            document.getElementById('addWindfallBtn').addEventListener('click', addWindfall);
+            document.getElementById('calculateBtn').addEventListener('click', calculateProjections);
+            document.getElementById('goalType').addEventListener('change', toggleGoalType);
+            
+            const incomeInputs = ['desiredMonthlyIncome', 'socialSecurityMonthly', 'otherRetirementIncome', 'withdrawalRate'];
+            incomeInputs.forEach(function(inputId) {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.addEventListener('input', updateTargetFromIncome);
+                }
+            });
+            
+            toggleGoalType();
+            addWindfall();
+            
+            setTimeout(function() {
+                document.getElementById('windfallAmount-1').value = '187500';
+                document.getElementById('windfallYear-1').value = '2026';
+                document.getElementById('windfallAllocation-1').value = '100';
+                updateTargetFromIncome();
+                calculateProjections();
+            }, 100);
+            
+            console.log('Initialization complete');
+        });
+        
+        console.log('Script loaded successfully');
+    </script>
+</body>
+</html>
+                
